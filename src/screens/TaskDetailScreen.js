@@ -65,14 +65,14 @@ const styles = StyleSheet.create({
 const options = {
     container: {
         marginBottom: 25,
-        padding: 5,
-        width: 170,
-        height: 170,
+        padding: 3,
+        width: 185,
+        height: 185,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
         borderColor: THEME.PRIMARY,
-        borderRadius: 100,
+        borderRadius: 185/2,
         backgroundColor: THEME.PRIMARY_LIGHT
     },
     text: {
