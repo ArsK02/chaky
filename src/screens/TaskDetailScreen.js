@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import { Stopwatch } from 'react-native-stopwatch-timer';
 
 import { SCREEN_CONTAINER_STYLE, THEME } from '../theme';
 
 export const taskDetailScreen = ({ navigation, route }) => {
     const { title } = route.params;
+
+    const [isStopwatchStart, setIsStopwatchStart] = useState(false);
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -14,14 +17,27 @@ export const taskDetailScreen = ({ navigation, route }) => {
 
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
-            <View style={styles.timerContainer}>
-                <Text style={styles.timerTime}>00:00:000</Text>
-                <View style={styles.timerButtonsContainer}>
-                    <View style={styles.timerButton}>
-                        <Button title='Start' onPress={() => { }} color={THEME.PRIMARY} />
+            <View style={styles.stopwatchContainer}>
+                <Stopwatch
+                    laps
+                    msecs
+                    start={isStopwatchStart}
+                    // To start
+                    //reset={resetStopwatch}
+                    // To reset
+                    options={options}
+                    // Options for the styling
+                    // getTime={(time) => {
+                    //     console.log(time);
+                    // }}
+                />
+
+                <View style={styles.stopwatchButtonsContainer}>
+                    <View style={styles.stopwatchButton}>
+                        <Button title='Start' onPress={() => setIsStopwatchStart(true)} color={THEME.PRIMARY} disabled={isStopwatchStart} />
                     </View>
-                    <View style={styles.timerButton}>
-                        <Button title='Stop' onPress={() => { }} color={THEME.PRIMARY_DARK} />
+                    <View style={styles.stopwatchButton}>
+                        <Button title='Stop' onPress={() => setIsStopwatchStart(false)} color={THEME.PRIMARY_DARK} disabled={!isStopwatchStart} />
                     </View>
 
 
@@ -32,23 +48,38 @@ export const taskDetailScreen = ({ navigation, route }) => {
 }
 
 const styles = StyleSheet.create({
-    timerContainer: {
+    stopwatchContainer: {
         alignItems: 'center',
         paddingVertical: 30
     },
-    timerTime: {
-        marginBottom: 15,
-        fontSize: 24,
-        lineHeight: 28,
-        fontWeight: 'bold',
-        color: THEME.DARK,
-    },
-    timerButtonsContainer: {
+    stopwatchButtonsContainer: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
-    timerButton: {
+    stopwatchButton: {
         width: '40%'
     }
 });
+
+const options = {
+    container: {
+        marginBottom: 25,
+        padding: 5,
+        width: 170,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: THEME.PRIMARY,
+        borderRadius: 100,
+        backgroundColor: THEME.PRIMARY_LIGHT
+    },
+    text: {
+        fontSize: 24,
+        lineHeight: 28,
+        fontWeight: 'bold',
+        color: THEME.DARK,
+        marginLeft: 7,
+    },
+};
