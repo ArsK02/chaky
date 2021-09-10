@@ -1,12 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { THEME, SCREEN_CONTAINER_STYLE } from '../theme';
 import { LoginModal } from './modals/LoginModal';
 
+const FILE_NAME = 'cambiado';
+
 export const tasksListScreen = ({ navigation: { navigate } }) => {
     const [loginOpened, setLoginOpened] = useState(true);
+    const [data, setData] = useState([]);
 
+    const fetchTasksList = async () => {
+        try {
+            let res = await fetch(`https://xlsdata.herokuapp.com/file?name=${FILE_NAME}.csv`)
+            let json = await res.json();
+            setData(json.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasksList();
+    }, []);
+    
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
             <Modal
@@ -18,27 +35,19 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
             </Modal>
 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <TouchableOpacity
-                    style={styles.taskItem}
-                    onPress={() => navigate('TaskDetail', { title: 'Task 1' })}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.taskItemText}>Task 1</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.taskItem}
-                    onPress={() => navigate('TaskDetail', { title: 'Task 2' })}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.taskItemText}>Task 2</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.taskItem}
-                    onPress={() => navigate('TaskDetail', { title: 'Task 3' })}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.taskItemText}>Task 3</Text>
-                </TouchableOpacity>
+                {data.length ? data.map((item, index) => {
+                        return (
+                            <TouchableOpacity
+                                style={styles.taskItem}
+                                onPress={() => navigate('TaskDetail', { title: item.field1 })}
+                                activeOpacity={0.7}
+                                key={index}
+                            >
+                                <Text style={styles.taskItemText}>{item.field1}</Text>
+                            </TouchableOpacity>
+                        );
+                    })
+                : null}
             </ScrollView>
 
         </View>

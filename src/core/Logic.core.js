@@ -41,6 +41,6 @@ export const LogicCore = () => {
       }, []);
 
     return (
-        <View />
+        <View></View>
     );
 }
