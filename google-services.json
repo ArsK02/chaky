@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "706095281420",
+    "project_id": "chaky-4945c",
+    "storage_bucket": "chaky-4945c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706095281420:android:7ca7c72e906e0781620529",
+        "android_client_info": {
+          "package_name": "com.chaky"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706095281420-5tlcfn24g7vb06m86h14qfk1ud2ak4tt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-s1d7DMIB0IYTiCp0n00loxdKiGmo29M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706095281420-5tlcfn24g7vb06m86h14qfk1ud2ak4tt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
