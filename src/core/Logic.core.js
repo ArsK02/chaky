@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -12,6 +13,13 @@ Notifications.setNotificationHandler({
 
 export const LogicCore = () => {
     //const [pushToken, setPushToken] = useState();
+    const storePushToken = async (value) => {
+      try {
+        await AsyncStorage.setItem('pushToken', value)
+      } catch (e) {
+        console.log(e)
+      }
+    }
 
     useEffect(() => {
         Notifications.getPermissionsAsync()
@@ -32,6 +40,7 @@ export const LogicCore = () => {
           .then((response) => {
             const token = response.data;
             console.log('Token: ', token)
+            storePushToken(token);
             //setPushToken(token);
           })
           .catch((err) => {
