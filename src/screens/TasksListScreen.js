@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Clipboard from 'expo-clipboard';
 
 import { THEME, SCREEN_CONTAINER_STYLE } from '../theme';
 import { LoginModal } from './modals/LoginModal';
@@ -9,6 +11,18 @@ const FILE_NAME = 'cambiado';
 export const tasksListScreen = ({ navigation: { navigate } }) => {
     const [loginOpened, setLoginOpened] = useState(true);
     const [data, setData] = useState([]);
+    const [pushToken, setPushToken] = useState('');
+
+    const getPushToken = async () => {
+        try {
+            const value = await AsyncStorage.getItem('pushToken')
+            if (value !== null) {
+                setPushToken(value);
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     const fetchTasksList = async () => {
         try {
@@ -22,8 +36,13 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
 
     useEffect(() => {
         fetchTasksList();
+        getPushToken();
     }, []);
-    
+
+    const copyToClipboard = () => {
+        Clipboard.setString(pushToken);
+    };
+
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
             <Modal
@@ -35,7 +54,8 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
             </Modal>
 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {data.length ? data.map((item, index) => {
+                <View>
+                    {data.length ? data.map((item, index) => {
                         return (
                             <TouchableOpacity
                                 style={styles.taskItem}
@@ -47,7 +67,14 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
                             </TouchableOpacity>
                         );
                     })
-                : null}
+                        : null}
+                </View>
+
+                {pushToken && pushToken.length ?
+                    <View style={styles.pushTokenContainer}>
+                        <Text style={styles.pushTokenText}>{pushToken}</Text>
+                        <Button title="Copy" onPress={copyToClipboard} color={THEME.PRIMARY} />
+                    </View> : null}
             </ScrollView>
 
         </View>
@@ -56,7 +83,9 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
 
 const styles = StyleSheet.create({
     scrollContainer: {
-        paddingVertical: 15
+        flex: 1,
+        paddingVertical: 15,
+        justifyContent: 'space-between'
     },
     taskItem: {
         marginBottom: 5,
@@ -67,5 +96,15 @@ const styles = StyleSheet.create({
     taskItemText: {
         fontSize: 16,
         lineHeight: 24
+    },
+    pushTokenContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    pushTokenText: {
+        fontSize: 12,
+        marginRight: 10
     }
 });
