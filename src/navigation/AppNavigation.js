@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { THEME, HEADER_STYLE } from '../theme';
 import { tasksListScreen } from '../screens/TasksListScreen';
 import { taskDetailScreen } from '../screens/TaskDetailScreen';
+import { notifModal } from '../screens/modals/NotifModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +41,10 @@ export const AppNavigation = () => {
                 <Stack.Screen
                     name="TaskDetail"
                     component={taskDetailScreen}
+                />
+                <Stack.Screen
+                    name="notifModal"
+                    component={notifModal}
                 />
             </Stack.Navigator>
         </NavigationContainer>

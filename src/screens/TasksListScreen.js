@@ -11,8 +11,6 @@ const FILE_NAME = 'cambiado';
 
 export const tasksListScreen = ({ navigation: { navigate } }) => {
     const [loginOpened, setLoginOpened] = useState(true);
-    const [notifModalOpened, setNotifModalOpened] = useState(false);
-    const [notifData, setNotifData] = useState('');
     const [data, setData] = useState([]);
     const [pushToken, setPushToken] = useState('');
 
@@ -51,8 +49,7 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
         const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
             (response) => {
                 setLoginOpened(false);
-                setNotifData(response.notification.request.content.body);
-                setNotifModalOpened(true);
+                navigate('notifModal', {text: response.notification.request.content.body})
             }
         );
 
@@ -94,26 +91,6 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
             >
                 <LoginModal setLoginOpened={setLoginOpened} />
             </Modal>
-            <Modal
-                animationType="slide"
-                visible={notifModalOpened}
-                onRequestClose={() => { }}
-                style={styles.notifModal}
-            >
-                <View style={styles.notifModalContainer}>
-                    <Text style={styles.notifText}>{notifData}</Text>
-                <View style={styles.notifButtonsContainer}>
-                    <View style={styles.notifButton}>
-                        <Button title="No" onPress={() => setNotifModalOpened(false)} color={THEME.PRIMARY} />
-                    </View>
-                    <View style={styles.notifButton}>
-                        <Button title="Si" onPress={() => setNotifModalOpened(false)} color={THEME.PRIMARY} />
-                    </View>
-                </View>
-                </View>
-                
-            </Modal>
-
         </View>
     );
 }
@@ -144,25 +121,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginRight: 10
     },
-    notifModal: {
-        flex: 1
-    },  
-    notifModalContainer: {
-        flex: 1,
-    },
-    notifText: {
-        marginTop: 40,
-        marginBottom: 50,
-        fontSize: 22,
-        lineHeight: 26,
-        textAlign: 'center'
-    },
-    notifButtonsContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    },
-    notifButton: {
-        width: '40%'
-    }
 });
