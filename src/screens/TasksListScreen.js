@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
+import * as Notifications from 'expo-notifications';
 
 import { THEME, SCREEN_CONTAINER_STYLE } from '../theme';
 import { LoginModal } from './modals/LoginModal';
@@ -10,6 +11,8 @@ const FILE_NAME = 'cambiado';
 
 export const tasksListScreen = ({ navigation: { navigate } }) => {
     const [loginOpened, setLoginOpened] = useState(true);
+    const [notifModalOpened, setNotifModalOpened] = useState(false);
+    const [notifData, setNotifData] = useState('');
     const [data, setData] = useState([]);
     const [pushToken, setPushToken] = useState('');
 
@@ -43,16 +46,23 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
         Clipboard.setString(pushToken);
     };
 
+    //Notifications
+    useEffect(() => {
+        const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+            (response) => {
+                setLoginOpened(false);
+                setNotifData(response.notification.request.content.body);
+                setNotifModalOpened(true);
+            }
+        );
+
+        return () => {
+            backgroundSubscription.remove();
+        };
+    }, []);
+
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
-            <Modal
-                animationType="slide"
-                visible={loginOpened}
-                onRequestClose={() => { }}
-            >
-                <LoginModal setLoginOpened={setLoginOpened} />
-            </Modal>
-
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View>
                     {data.length ? data.map((item, index) => {
@@ -76,6 +86,33 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
                         <Button title="Copy" onPress={copyToClipboard} color={THEME.PRIMARY} />
                     </View> : null}
             </ScrollView>
+
+            <Modal
+                animationType="slide"
+                visible={loginOpened}
+                onRequestClose={() => { }}
+            >
+                <LoginModal setLoginOpened={setLoginOpened} />
+            </Modal>
+            <Modal
+                animationType="slide"
+                visible={notifModalOpened}
+                onRequestClose={() => { }}
+                style={styles.notifModal}
+            >
+                <View style={styles.notifModalContainer}>
+                    <Text style={styles.notifText}>{notifData}</Text>
+                <View style={styles.notifButtonsContainer}>
+                    <View style={styles.notifButton}>
+                        <Button title="No" onPress={() => setNotifModalOpened(false)} color={THEME.PRIMARY} />
+                    </View>
+                    <View style={styles.notifButton}>
+                        <Button title="Si" onPress={() => setNotifModalOpened(false)} color={THEME.PRIMARY} />
+                    </View>
+                </View>
+                </View>
+                
+            </Modal>
 
         </View>
     );
@@ -106,5 +143,26 @@ const styles = StyleSheet.create({
     pushTokenText: {
         fontSize: 12,
         marginRight: 10
+    },
+    notifModal: {
+        flex: 1
+    },  
+    notifModalContainer: {
+        flex: 1,
+    },
+    notifText: {
+        marginTop: 40,
+        marginBottom: 50,
+        fontSize: 22,
+        lineHeight: 26,
+        textAlign: 'center'
+    },
+    notifButtonsContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-around'
+    },
+    notifButton: {
+        width: '40%'
     }
 });

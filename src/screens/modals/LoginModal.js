@@ -4,7 +4,7 @@ import { View, Text, Button, SafeAreaView, StyleSheet, TextInput } from 'react-n
 import { THEME } from '../../theme';
 
 const VALID_EMAIL = 'moises@galvintec.com';
-const VALID_PASS = '123456';
+const VALID_PASS = 'Galvintec';
 
 export const LoginModal = ({ setLoginOpened }) => {
     const [email, setEmail] = useState('');
