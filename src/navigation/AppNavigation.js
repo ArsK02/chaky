@@ -45,6 +45,7 @@ export const AppNavigation = () => {
                 <Stack.Screen
                     name="notifModal"
                     component={notifModal}
+                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

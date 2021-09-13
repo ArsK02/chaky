@@ -7,32 +7,21 @@ export const notifModal = ({ navigation: { navigate }, route }) => {
     const { text } = route.params;
 
     return (
-        <Modal
-            animationType="slide"
-            visible={true}
-            onRequestClose={() => { }}
-            style={styles.notifModal}
-        >
-            <View style={styles.notifModalContainer}>
-                <Text style={styles.notifText}>{text}</Text>
-                <View style={styles.notifButtonsContainer}>
-                    <View style={styles.notifButton}>
-                        <Button title="No" onPress={() => navigate('TasksList')} color={THEME.PRIMARY} />
-                    </View>
-                    <View style={styles.notifButton}>
-                        <Button title="Si" onPress={() => navigate('TasksList')} color={THEME.PRIMARY} />
-                    </View>
+        <View style={styles.notifModalContainer}>
+            <Text style={styles.notifText}>{text}</Text>
+            <View style={styles.notifButtonsContainer}>
+                <View style={styles.notifButton}>
+                    <Button title="No" onPress={() => navigate('TasksList')} color={THEME.PRIMARY} />
+                </View>
+                <View style={styles.notifButton}>
+                    <Button title="Si" onPress={() => navigate('TasksList')} color={THEME.PRIMARY} />
                 </View>
             </View>
-
-        </Modal>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    notifModal: {
-        flex: 1
-    },  
     notifModalContainer: {
         flex: 1,
     },
