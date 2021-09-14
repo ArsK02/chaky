@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, Modal, StyleSheet, TouchableOpacity, ScrollView, Button, FlatList, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import * as Notifications from 'expo-notifications';
@@ -13,6 +13,7 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
     const [loginOpened, setLoginOpened] = useState(true);
     const [data, setData] = useState([]);
     const [pushToken, setPushToken] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
 
     const getPushToken = async () => {
         try {
@@ -30,6 +31,7 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
             let res = await fetch(`https://xlsdata.herokuapp.com/file?name=${FILE_NAME}.csv`)
             let json = await res.json();
             setData(json.data);
+            setRefreshing(false);
         } catch (err) {
             console.log(err);
         }
@@ -44,12 +46,17 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
         Clipboard.setString(pushToken);
     };
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchTasksList();
+    }, []);
+
     //Notifications
     useEffect(() => {
         const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
             (response) => {
                 setLoginOpened(false);
-                navigate('notifModal', {text: response.notification.request.content.body})
+                navigate('notifModal', { text: response.notification.request.content.body })
             }
         );
 
@@ -60,7 +67,32 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
 
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {data.length ?
+                <FlatList
+                    data={data}
+                    keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                    renderItem={({item}) => {
+                        return (
+                            <TouchableOpacity
+                                style={styles.taskItem}
+                                onPress={() => navigate('TaskDetail', { title: item.field1 || '' })}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={styles.taskItemText}>{item.field1 || ''}</Text>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    style={styles.scrollContainer}
+                />
+                : null}
+
+            {/* <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View>
                     {data.length ? data.map((item, index) => {
                         return (
@@ -77,12 +109,14 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
                         : null}
                 </View>
 
-                {pushToken && pushToken.length ?
-                    <View style={styles.pushTokenContainer}>
-                        <Text style={styles.pushTokenText}>{pushToken}</Text>
-                        <Button title="Copy" onPress={copyToClipboard} color={THEME.PRIMARY} />
-                    </View> : null}
-            </ScrollView>
+              
+            </ScrollView> */}
+
+            {pushToken && pushToken.length ?
+                <View style={styles.pushTokenContainer}>
+                    <Text style={styles.pushTokenText}>{pushToken}</Text>
+                    <Button title="Copy" onPress={copyToClipboard} color={THEME.PRIMARY} />
+                </View> : null}
 
             <Modal
                 animationType="slide"
@@ -99,9 +133,9 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flex: 1,
         paddingVertical: 15,
-        justifyContent: 'space-between'
     },
     taskItem: {
+        width: '100%',
         marginBottom: 5,
         paddingVertical: 10,
         paddingHorizontal: 5,
