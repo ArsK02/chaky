@@ -7,8 +7,6 @@ import { SCREEN_CONTAINER_STYLE, THEME } from '../theme';
 export const taskDetailScreen = ({ navigation, route }) => {
     const { title } = route.params;
 
-    const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: title,

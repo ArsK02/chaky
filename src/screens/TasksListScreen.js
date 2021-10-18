@@ -6,6 +6,7 @@ import * as Notifications from 'expo-notifications';
 
 import { THEME, SCREEN_CONTAINER_STYLE } from '../theme';
 import { LoginModal } from './modals/LoginModal';
+import { TaskDetailModal } from './modals/TaskDetailModal';
 
 const FILE_NAME = 'cambiado';
 
@@ -65,6 +66,35 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
         };
     }, []);
 
+    const TaskItem = ({ item }) => {
+        const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+        const [isModalVisible, setIsModalVisible] = useState(false);
+        const [resetStopwatch, setResetStopwatch] = useState(false);
+        const [startTime, setStartTime] = useState();
+
+        return (
+            <TouchableOpacity
+                style={styles.taskItem}
+                onPress={() => setIsModalVisible(true)}
+                activeOpacity={0.7}
+            >
+                <Text style={styles.taskItemText}>{item.field1 || ''}</Text>
+
+                <TaskDetailModal
+                    title={item.field1}
+                    startTime={startTime}
+                    setStartTime={setStartTime}
+                    isModalVisible={isModalVisible}
+                    setIsModalVisible={setIsModalVisible}
+                    isStopwatchStart={isStopwatchStart}
+                    setIsStopwatchStart={setIsStopwatchStart}
+                    resetStopwatch={resetStopwatch}
+                    setResetStopwatch={setResetStopwatch}
+                />
+            </TouchableOpacity>
+        );
+    }
+
     return (
         <View style={SCREEN_CONTAINER_STYLE}>
             {data.length ?
@@ -77,17 +107,7 @@ export const tasksListScreen = ({ navigation: { navigate } }) => {
                             onRefresh={onRefresh}
                         />
                     }
-                    renderItem={({item}) => {
-                        return (
-                            <TouchableOpacity
-                                style={styles.taskItem}
-                                onPress={() => navigate('TaskDetail', { title: item.field1 || '' })}
-                                activeOpacity={0.7}
-                            >
-                                <Text style={styles.taskItemText}>{item.field1 || ''}</Text>
-                            </TouchableOpacity>
-                        );
-                    }}
+                    renderItem={({ item }) => <TaskItem item={item} />}
                     style={styles.scrollContainer}
                 />
                 : null}
